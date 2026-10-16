@@ -1,0 +1,33 @@
+from sqlalchemy.orm import mapped_column, relationship, Mapped
+from sqlalchemy import  String, Date, ForeignKey
+from backend.database import Base, engine
+from  datetime import datetime
+
+class User(Base):
+    __tablename__ = 'users'
+    id: Mapped[int] = mapped_column(primary_key=True)
+    login: Mapped[str] = mapped_column(String(15), nullable=False)
+    password: Mapped[str] = mapped_column(String(30), nullable=False)
+
+    post: Mapped['Post'] = relationship(back_populates='author')
+
+    def __repr__(self) :
+        return f'User({self.id=},  {self.login=},  {self.password=})\n '
+
+class Post(Base):
+    __tablename__ = 'posts'
+    id: Mapped[int] = mapped_column(primary_key=True)
+    title: Mapped[str] = mapped_column(String(50), nullable=True)
+    text:Mapped[str] = mapped_column(String(255), nullable=True)
+    author_id: Mapped[int] = mapped_column(ForeignKey('users.id') )
+    data:Mapped[datetime] = mapped_column(Date, default=datetime.now())
+
+    author: Mapped['User'] = relationship(back_populates='post')
+
+    def __repr__(self) :
+        return f'Post({self.id=} ,  {self.title=} , {self.text=} ,  {self.data} , [ {self.author_id=} ,  {self.author.login=}]) \n'
+
+Base.metadata.create_all(engine)
+
+
+
