@@ -68,3 +68,40 @@ def create_post(session, login):
     new_posts = m.Post(title = title_v, text = text_v, author_id = author_v)
     session.add(new_posts)
     print(f"\n[>] Пост добавлен!\n")
+
+    return 0
+
+def get_post(session, login):
+    '''
+        В текущей сессии мы выводим все записи для выбранной модели
+    '''
+    statement = (sql.select(m.Post)
+    .where(
+                 m.Post.author.has( m.User.login == login)
+        # метод has() необходим для создания проверок с атрибутами отношений
+            )
+    )
+    result = session.execute(statement).scalars().all()
+    print(result)
+    print(f"\n[>] Списки записей {login} выведен!")
+
+    return 0
+
+def select_model(session, model, attribute : str, value):
+    '''
+        В текущей сессии ищем объект в выбранной модели и с определенным
+        атрибутом
+    '''
+    model_attribute = getattr(model, attribute)
+    statement = sql.select(model).where(
+        model_attribute == value
+    )
+    result = session.execute(statement).first()
+    return result
+
+def delete_model(session, model, attribute, value):
+    select = select_model(session, model, attribute, value)
+    print(f"[>] У модели {model} была удалена запись: \n {select}")
+    for record in select:
+        session.delete(record)
+        session.commit()

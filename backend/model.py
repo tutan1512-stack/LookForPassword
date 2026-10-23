@@ -1,5 +1,5 @@
 from sqlalchemy.orm import mapped_column, relationship, Mapped
-from sqlalchemy import  String, Date, ForeignKey
+from sqlalchemy import  String, Date, ForeignKey, Text
 from backend.database import Base, engine
 from  datetime import datetime
 
@@ -18,7 +18,7 @@ class Post(Base):
     __tablename__ = 'posts'
     id: Mapped[int] = mapped_column(primary_key=True)
     title: Mapped[str] = mapped_column(String(50), nullable=True)
-    text:Mapped[str] = mapped_column(String(255), nullable=True)
+    text:Mapped[str | None] = mapped_column(Text, nullable=True)
     author_id: Mapped[int] = mapped_column(ForeignKey('users.id') )
     data:Mapped[datetime] = mapped_column(Date, default=datetime.now())
 

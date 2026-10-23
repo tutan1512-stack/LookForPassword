@@ -35,23 +35,25 @@ while runApp == True:
                     runAccount = True
                     while runAccount:
                         answer_account = input(f"\n Добро пожаловать {login_v}! \n\n"
-                              f"1. Создать пост\n2. Прочитать  пост\n3. Изменить пост\n4. Удалить пост"
+                              f"1. Создать пост\n2. Прочитать  пост\n3. Найти пост\n4. Удалить пост"
                               f"\n0. Выйти из аккаунта\n\n[<] Введите действие: ")
+
                         match answer_account:
                             case "1":
-
                                 orm.create_post(s, login_v)
-
                                 s.commit()
 
                             case "2":
-                                pass
+                                orm.get_post(s, login_v)
 
                             case "3":
-                                pass
+                                answer_select = input(f"[<] Введите название поста: ")
+                                result = orm.select_model(s, m.Post, "title", answer_select)
+                                print(f"[>] Для модели {m.Post} были найдены такие записи:\n {result}")
 
                             case "4":
-                                pass
+                                answer_select = input(f"[<] Введите название поста: ")
+                                orm.delete_model(s, m.Post, "title", answer_select)
 
                             case "0":
                                 runAccount = False
