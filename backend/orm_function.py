@@ -89,7 +89,7 @@ def select_model(session, login, model, attribute : str, value):
         statement = sql.select(model).where(
             (model_attribute == value) and (m.User.login == login)
         )
-        result = session.execute(statement).first()
+        result = session.execute(statement).all()
         return result
     except Exception as exc:
         print(f"[!] Ошибка базы данных: {exc.__class__.__name__}", "err")
