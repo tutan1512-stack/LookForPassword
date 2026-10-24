@@ -48,12 +48,12 @@ while runApp == True:
 
                             case "3":
                                 answer_select = input(f"[<] Введите название поста: ")
-                                result = orm.select_model(s, m.Post, "title", answer_select)
+                                result = orm.select_model(s, login_v, m.Post, "title", answer_select)
                                 print(f"[>] Для модели {m.Post} были найдены такие записи:\n {result}")
 
                             case "4":
                                 answer_select = input(f"[<] Введите название поста: ")
-                                orm.delete_model(s, m.Post, "title", answer_select)
+                                orm.delete_model(s, login_v, m .Post, "title", answer_select)
 
                             case "0":
                                 runAccount = False

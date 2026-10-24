@@ -24,10 +24,10 @@ def no_duplicate(session, login,password):
         )
     )
 
-    result = session.scalars(statement)
+    result = session.execute(statement).scalar()
     if result is  True:
+        session.close()
         print('\n[>] Такая запись существует!\n')
-        pass
 
     else:
         hash_password = f.generated_hash(password)
@@ -53,23 +53,18 @@ def comparison(session, login, password):
         print('\n[>] Логин или пароль не верны!\n')
         return result
 
-def create_post(session, login):
+def create_post(session, login, title, text):
     '''
         Мы создаем новый пост уже в выбранном аккаунте, т.е. id автора всегда определяется,
         проверка на существования автора не нужна.
     '''
-    title_v = input(f"\n[>] Введите название поста: ")
-    text_v = input(f"[>] Введите текста поста: ")
     stmt = sql.select(m.User.id).where(
         m.User.login == login
     )
     author_v = session.execute(stmt).scalars().first()
 
-    new_posts = m.Post(title = title_v, text = text_v, author_id = author_v)
+    new_posts = m.Post(title = title, text = text, author_id = author_v)
     session.add(new_posts)
-    print(f"\n[>] Пост добавлен!\n")
-
-    return 0
 
 def get_post(session, login):
     '''
@@ -82,26 +77,31 @@ def get_post(session, login):
             )
     )
     result = session.execute(statement).scalars().all()
-    print(result)
-    print(f"\n[>] Списки записей {login} выведен!")
+    return result
 
-    return 0
-
-def select_model(session, model, attribute : str, value):
+def select_model(session, login, model, attribute : str, value):
     '''
         В текущей сессии ищем объект в выбранной модели и с определенным
         атрибутом
     '''
-    model_attribute = getattr(model, attribute)
-    statement = sql.select(model).where(
-        model_attribute == value
-    )
-    result = session.execute(statement).first()
-    return result
+    try:
+        model_attribute = getattr(model, attribute)
+        statement = sql.select(model).where(
+            (model_attribute == value) and (m.User.login == login)
+        )
+        result = session.execute(statement).first()
+        return result
+    except Exception as exc:
+        print(f"[!] Ошибка базы данных: {exc.__class__.__name__}", "err")
 
-def delete_model(session, model, attribute, value):
-    select = select_model(session, model, attribute, value)
-    print(f"[>] У модели {model} была удалена запись: \n {select}")
-    for record in select:
-        session.delete(record)
-        session.commit()
+
+def delete_model(session, login,  model, attribute, value):
+    try:
+        select = select_model(session, login, model, attribute, value)
+
+        #print(f"[>] У модели {model} была удалена запись: \n {select}")
+        for record in select:
+            session.delete(record)
+
+    except TypeError:
+        session.close()

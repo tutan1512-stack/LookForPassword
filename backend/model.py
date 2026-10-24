@@ -7,7 +7,7 @@ class User(Base):
     __tablename__ = 'users'
     id: Mapped[int] = mapped_column(primary_key=True)
     login: Mapped[str] = mapped_column(String(15), nullable=False)
-    password: Mapped[str] = mapped_column(String(30), nullable=False)
+    password: Mapped[str] = mapped_column(String(64), nullable=False)
 
     post: Mapped['Post'] = relationship(back_populates='author')
 
@@ -20,7 +20,7 @@ class Post(Base):
     title: Mapped[str] = mapped_column(String(50), nullable=True)
     text:Mapped[str | None] = mapped_column(Text, nullable=True)
     author_id: Mapped[int] = mapped_column(ForeignKey('users.id') )
-    data:Mapped[datetime] = mapped_column(Date, default=datetime.now())
+    data:Mapped[datetime] = mapped_column(Date, default=datetime.now)
 
     author: Mapped['User'] = relationship(back_populates='post')
 
