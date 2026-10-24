@@ -22,7 +22,7 @@ class Post(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     title: Mapped[str] = mapped_column(String(50), nullable=True)
     text:Mapped[str | None] = mapped_column(Text, nullable=True)
-    author_id: Mapped[int] = mapped_column(ForeignKey('users.id'), ondelete="CASCADE")
+    author_id: Mapped[int] = mapped_column(ForeignKey('users.id'))
     data:Mapped[datetime] = mapped_column(Date, default=datetime.now)
 
     author: Mapped['User'] = relationship(back_populates='post')
