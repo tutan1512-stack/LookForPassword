@@ -26,8 +26,8 @@ def no_duplicate(session, login,password):
 
     result = session.execute(statement).scalar()
     if result is  True:
-        session.close()
-        print('\n[>] Такая запись существует!\n')
+        return result
+
 
     else:
         hash_password = f.generated_hash(password)
@@ -47,11 +47,11 @@ def comparison(session, login, password):
 
     result = session.scalar(statement)
     if result is True:
-        print('\n[>] Логин и пароль верные!\n')
+        # print('\n[>] Логин и пароль верные!\n')
         return result
     else:
-        print('\n[>] Логин или пароль не верны!\n')
-        return result
+        # print('\n[>] Логин или пароль не верны!\n')
+        return 0
 
 def create_post(session, login, title, text):
     '''
@@ -79,29 +79,12 @@ def get_post(session, login):
     result = session.execute(statement).scalars().all()
     return result
 
-def select_model(session, login, model, attribute : str, value):
-    '''
-        В текущей сессии ищем объект в выбранной модели и с определенным
-        атрибутом
-    '''
-    try:
-        model_attribute = getattr(model, attribute)
-        statement = sql.select(model).where(
-            (model_attribute == value) and (m.User.login == login)
-        )
-        result = session.execute(statement).all()
-        return result
-    except Exception as exc:
-        print(f"[!] Ошибка базы данных: {exc.__class__.__name__}", "err")
+def select_model(session, login, model, attribute: str, value):
+    statement = sql.select(model).where(getattr(model, attribute) == value)
+    if model is m.Post:
+        statement = statement.where(m.Post.author.has(m.User.login == login))
+    return session.scalars(statement).one()
 
-
-def delete_model(session, login,  model, attribute, value):
-    try:
-        select = select_model(session, login, model, attribute, value)
-
-        #print(f"[>] У модели {model} была удалена запись: \n {select}")
-        for record in select:
-            session.delete(record)
-
-    except TypeError:
-        session.close()
+def delete_model(session, login, model, attribute, value):
+    for record in select_model(session, login, model, attribute, value):
+        session.delete(record)

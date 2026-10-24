@@ -22,10 +22,10 @@ class Post(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     title: Mapped[str] = mapped_column(String(50), nullable=True)
     text:Mapped[str | None] = mapped_column(Text, nullable=True)
-    author_id: Mapped[int] = mapped_column(ForeignKey('users.id'))
+    author_id: Mapped[int] = mapped_column(ForeignKey('users.id', ondelete="CASCADE"))
     data:Mapped[datetime] = mapped_column(Date, default=datetime.now)
 
-    author: Mapped['User'] = relationship(back_populates='post')
+    author: Mapped['User'] = relationship(back_populates='posts')
 
     def __repr__(self) :
         return f'Post({self.id=} ,  {self.title=} , {self.text=} ,  {self.data} , [ {self.author_id=} ,  {self.author.login=}]) \n'

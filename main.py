@@ -54,6 +54,7 @@ while runApp == True:
                             case "4":
                                 answer_select = input(f"[<] Введите название поста: ")
                                 orm.delete_model(s, login_v, m .Post, "title", answer_select)
+                                s.commit()
 
                             case "0":
                                 runAccount = False
